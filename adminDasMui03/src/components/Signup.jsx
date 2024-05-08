@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Button from '@mui/material/Button';
 import { TextField, colors } from "@mui/material";
 import {Card} from "@mui/material";
@@ -6,6 +6,8 @@ import {Typography} from "@mui/material";
 
 
 function Signup(){
+    const[email,Setemail]=useState("")
+    const[password,Setpassword]=useState("")
    return (
     
    <div  style={{
@@ -19,26 +21,41 @@ function Signup(){
         
     }}>
         <Typography>
-            Welcome
+            Welcome to Sign up
         </Typography>
         <br />
-        <TextField id="outlined-basic" label="Email" variant="outlined" style={{
+        <TextField  label="Email" variant="outlined" id={"username"} style={{
             height:"12px",
-            width:"250px"
-        }}/> 
+            width:"250px",
+            }} onClick={(e)=>{
+                Setemail(e.target.value)
+            }}/> 
     <br /><br /><br /><br />
-    <TextField id="outlined-basic" label="Password" variant="outlined"  style={{
+        <TextField  label="Password" variant="outlined"  id={"password"} style={{
             height:"12px",
-            width:"250px"
+            width:"250px",
+           
+        }}  onClick={(e)=>{
+            Setpassword(e.target.value)
         }}/>
     <br /><br /><br /><br />
-    <Button variant="contained">SignUp</Button>
+    <Button variant="contained" 
+    onClick={()=>{
+        fetch("http://localhost:3000/signup",{
+            method:"POST",
+            body:JSON.stringify({
+                username:email,
+                password:password
+            }),
+            headers:{
+                "Content-type":"application/json"
+            }
+
+        })
+    }}>SignUp</Button>
     </Card>
     </center>
-    
-        
-   
-   </div>
+ </div>
       
    )
 }
