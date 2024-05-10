@@ -1,11 +1,11 @@
-import express from 'express';
-const app = express()
-import jwt from 'jsonwebtoken';
-import fs from 'fs';
-import cors from 'cors';
-app.use(cors())
+import express from "express";
+import jwt from "jsonwebtoken";
+import fs from "fs";
+import cors from "cors"
+const app = express();
 
 app.use(express.json());
+app.use(cors())
 
 let ADMINS = [];
 let USERS = [];
@@ -149,4 +149,4 @@ app.get('/users/purchasedCourses', authenticateJwt, (req, res) => {
   }
 });
 
-app.listen(3001, () => console.log('Server running on port 3000'));
+app.listen(3001, () => console.log('Server running on port 3001'));

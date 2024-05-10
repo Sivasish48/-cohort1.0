@@ -24,24 +24,24 @@ function Signup(){
             Welcome to Sign up
         </Typography>
         <br />
-        <TextField  label="Email" variant="outlined" id={"username"} style={{
+        <TextField  label="Email" variant="outlined"  style={{
             height:"12px",
             width:"250px",
-            }} onClick={(e)=>{
+            }} onChange={(e)=>{
                 Setemail(e.target.value)
             }}/> 
     <br /><br /><br /><br />
-        <TextField  label="Password" variant="outlined"  id={"password"} style={{
+        <TextField  label="Password" variant="outlined" style={{
             height:"12px",
             width:"250px",
            
-        }}  onClick={(e)=>{
+        }}  onChange={(e)=>{
             Setpassword(e.target.value)
         }}/>
     <br /><br /><br /><br />
     <Button variant="contained" 
     onClick={()=>{
-        fetch("http://localhost:3000/signup",{
+        fetch("http://localhost:3001/admin/signup",{
             method:"POST",
             body:JSON.stringify({
                 username:email,
@@ -49,8 +49,13 @@ function Signup(){
             }),
             headers:{
                 "Content-type":"application/json"
-            }
+            } 
 
+        }).then((resp)=>{
+            resp.json()
+        .then((data)=>{
+           localStorage.setItem("token",data.token)
+            })
         })
     }}>SignUp</Button>
     </Card>
