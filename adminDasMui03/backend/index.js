@@ -57,9 +57,10 @@ app.post('/admin/signup', (req, res) => {
   }
 });
 
-app.post('/admin/login', (req, res) => {
-  const { username, password } = req.headers;
+app.post('/admin/signin', (req, res) => {
+  const { username, password } = req.body;
   const admin = ADMINS.find(a => a.username === username && a.password === password);
+  console.log(admin);
   if (admin) {
     const token = jwt.sign({ username, role: 'admin' }, SECRET, { expiresIn: '1h' });
     res.json({ message: 'Logged in successfully', token });
@@ -149,4 +150,4 @@ app.get('/users/purchasedCourses', authenticateJwt, (req, res) => {
   }
 });
 
-app.listen(3001, () => console.log('Server running on port 3001'));
+app.listen(5000, () => console.log('Server running on port 5000'));

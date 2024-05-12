@@ -8,6 +8,18 @@ import {Typography} from "@mui/material";
 function Signin(){
     const[email,setEmail]=useState('')
     const[password,setPassword]=useState('')
+
+    const handleClick= async ()=>{
+        console.log(email,password)
+       let result = await fetch("http://localhost:5000/admin/signin",{
+        method:"POST",
+        body:JSON.stringify({username:email,password:password}),
+        headers:{
+            'Content-Type':"application/json",
+        }
+    } )
+
+}
    
    return (
     
@@ -29,7 +41,9 @@ function Signin(){
             height:"12px",
             width:"250px"
         }}  onChange={(e)=>{
+            console.log(e.target.value)
             setEmail(e.target.value)
+            
         }}/> 
     <br /><br /><br /><br />
     <TextField id="outlined-basic" label="Password" variant="outlined"  style={{
@@ -39,25 +53,10 @@ function Signin(){
             setPassword(e.target.value)
         }}/>
     <br /><br /><br /><br />
-    <Button variant="contained"  
+    <Button variant="contained"
     onClick={()=>{
-        fetch("http://localhost:3001/admin/login",{
-            method:"POST",
-            body:JSON.stringify({
-                username:email,
-                password:password
-            }),
-            headers:{
-                "Content-type":"application/json",
-                "Authorization":"bearer"+ data.token
-                
-            } 
-
-        }).then((resp)=>{
-            resp.json()
-        }).then((data)=>{
-           localStorage.getItem("token",data.token)
-        })
+        handleClick()
+        console.log(result);
     }}>Signin</Button>
     </Card>
     </center>

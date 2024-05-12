@@ -41,16 +41,12 @@ function Signup(){
     <br /><br /><br /><br />
     <Button variant="contained" 
     onClick={()=>{
-        fetch("http://localhost:3001/admin/signup",{
+        fetch("http://localhost:5000/admin/signup",{
             method:"POST",
             body:JSON.stringify({
                 username:email,
                 password:password
             }),
-            headers:{
-                "Content-type":"application/json"
-            } 
-
         }).then((resp)=>{
             resp.json()
         .then((data)=>{
