@@ -9,27 +9,67 @@ import {
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
   import {Input} from "@/components/ui/input"
+  import { useNavigate } from "react-router-dom";
+  import {React,useState} from "react";
+
+
   function Login(){
+    const navigate = useNavigate()
+    const[email,Setemail]=useState("")
+    const[password,Setpassword]=useState("")
+
+   const handleClick = async ()=>{
+     fetch("http://localhost:4000/admin/login",{
+      method:"POST",
+      body:JSON.stringify({username:email,password:password}),
+      headers:{
+          'Content-Type':"application/json",
+      }
+  } ).then((res)=>{
+    res.json()
+  }).then((data)=>{
+       console.log(data);
+  })
+
+   }
+
      return(
-        <Card className="w-[350px] mt-20">
+
+        
+     
+
+
+ <Card className=" content-normal w-[350px] mt-40 ">
   <CardHeader className="text-center">
     <CardTitle>Login</CardTitle>
     <CardDescription>basic login page</CardDescription>
   </CardHeader>
   <CardContent>
     <div className="grid gap-2 item-start space-y-2">
-     <Label htmlForm="email" className="text-center font-normal">Email</Label>
-     <Input id="email" types="email" placeholder="xyz@gmail.com"/>
+     <Label className="text-start font-normal">Email</Label>
+     <Input id="email" types="email" placeholder="xyz@gmail.com" onChange={(e)=>{
+      Setemail(e.target.value)
+     }}/>
     </div>
     <div className="grid gap-2 item-start space-y-2 mt-7">
-     <Label htmlForm="password" className="text-center font-normal">password</Label>
-     <Input id="password" types="password" />
+     <Label className="text-start font-normal">password</Label>
+     <Input id="password" types="password"  onChange={(e)=>{
+      Setpassword(e.target.value)
+     }}/>
     </div>
   </CardContent>
-  <CardFooter>
-    <Button>Create an account</Button>
+  <CardFooter className="justify-between">
+    <Button onClick={()=>{
+      handleClick()
+    }}>Login</Button>
+
+
+    <Button   onClick={()=>{
+            navigate("/signup")
+           }}>Create an account</Button>
   </CardFooter>
 </Card>
+
 
      )
   }
