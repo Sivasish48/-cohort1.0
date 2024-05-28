@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const fs = require('fs');
 const cors = require("cors")
 const app = express();
+const path = require('path');
 
 app.use(express.json());
 app.use(cors())
@@ -11,16 +12,38 @@ let ADMINS = [];
 let USERS = [];
 let COURSES = [];
 
-// Read data from file, or initialize to empty array if file does not exist
-try {
-    ADMINS = JSON.parse(fs.readFileSync('admins.json', 'utf8'));
-    USERS = JSON.parse(fs.readFileSync('users.json', 'utf8'));
-    COURSES = JSON.parse(fs.readFileSync('courses.json', 'utf8'));
-} catch {
-    ADMINS = [];
-    USERS = [];
-    COURSES = [];
-}
+// Function to read JSON file or return an empty array if file does not exist or is invalid
+const readJsonFile = (filePath) => {
+  try {
+    const data = fs.readFileSync(filePath, 'utf8');
+    return JSON.parse(data);
+  } catch (err) {
+    console.error(`Error reading file from disk: ${err}`);
+    return [];
+  }
+};
+
+// Function to write initial empty array to JSON file if it doesn't exist or is invalid
+const initializeJsonFile = (filePath) => {
+  if (!fs.existsSync(filePath) || readJsonFile(filePath).length === 0) {
+    fs.writeFileSync(filePath, JSON.stringify([]));
+  }
+};
+
+// Construct file paths relative to the script location
+const adminsFilePath = path.join(__dirname, 'admins.json');
+const usersFilePath = path.join(__dirname, 'users.json');
+const coursesFilePath = path.join(__dirname, 'courses.json');
+
+// Initialize files if they are empty or do not exist
+initializeJsonFile(adminsFilePath);
+initializeJsonFile(usersFilePath);
+initializeJsonFile(coursesFilePath);
+
+// Initialize data
+ADMINS = readJsonFile(adminsFilePath);
+USERS = readJsonFile(usersFilePath);
+COURSES = readJsonFile(coursesFilePath);
 console.log(ADMINS);
 
 const SECRET = 'my-secret-key';
@@ -73,7 +96,9 @@ app.post('/admin/courses', authenticateJwt, (req, res) => {
   course.id = COURSES.length + 1;
   COURSES.push(course);
   fs.writeFileSync('courses.json', JSON.stringify(COURSES));
-  res.json({ message: 'Course created successfully', courseId: course.id });
+
+  const username = req.user.username
+  res.json({ message: 'Course created successfully', courseId: course.id,username:username });
 });
 
 app.get("/admin/me", authenticateJwt, (req,res)=>{
