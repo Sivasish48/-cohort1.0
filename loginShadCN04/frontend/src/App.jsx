@@ -9,24 +9,23 @@ function App() {
   
 
   return (
-    <div>
-      <Appbar/>
-      <div className="grid grid-cols-1 justify-content-center">
-       <div className="flex items-center justify-center">
-       <Router>
-    
-    <Routes>
-      <Route path={"/login"} element={<Login/>}/>
-      <Route path={"/signup"} element={<Signup/>}/>
-      <Route path={"/addcourses"} element={<AddCourses/>}/>
-    </Routes>
-   </Router>
-       </div>
+    <Router>
+      <div className="relative h-screen flex flex-col justify-center items-center">
+        {/* Signin/Signup Components */}
+        <div className="mb-20"> {/* Add margin bottom for spacing */}
+          <Routes>
+            <Route path={"/login"} element={<Login />} />
+            <Route path={"/signup"} element={<Signup />} />
+            <Route path={"/addcourses"} element={<AddCourses />} />
+          </Routes>
+        </div>
 
-    </div>
-   
-     </div>
-    
+        {/* Appbar positioned at the top right */}
+        <div className="absolute top-0 right-0">
+          <Appbar />
+        </div>
+      </div>
+    </Router>
   )
 }
 

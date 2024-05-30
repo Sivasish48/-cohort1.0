@@ -1,7 +1,7 @@
 "use client";
 
-import React, { forwardRef, useEffect } from "react";
-//import { Button } from "@/components/ui/button";
+import React, { forwardRef, useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 
 
 import { cn } from "@/lib/utils";
@@ -15,6 +15,9 @@ import {
   
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
+
+
+import { useNavigate } from "react-router-dom";
 
 const components = [
   {
@@ -56,6 +59,9 @@ const components = [
 
 export default function Appbar() {
 
+    const [userEmail,setUserEmail]=useState(null)
+    const navigate = useNavigate()
+
     useEffect(() => {
         fetch("http://localhost:4000/admin/me", {
           method: "GET",
@@ -72,6 +78,7 @@ export default function Appbar() {
           })
           .then((data) => {
             console.log(data);
+            setUserEmail(data.username)
           })
           .catch((error) => {
             // Handle errors
@@ -80,15 +87,17 @@ export default function Appbar() {
       }, []);
     
 
-  return (
-    <div className="flex justify-end">
+ 
+    if (userEmail){
+      return (
+        <div className="flex justify-end">
        <NavigationMenu> 
     <NavigationMenuList>
         <div>
         <NavigationMenuItem>
          
          <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-           Logout
+           {userEmail}
          </NavigationMenuLink>
        
      </NavigationMenuItem>  
@@ -96,9 +105,17 @@ export default function Appbar() {
        <div>
        <NavigationMenuItem>
       
-      <NavigationMenuLink  className={navigationMenuTriggerStyle()}>
-        Logout
-      </NavigationMenuLink>
+       <NavigationMenuLink 
+      className={navigationMenuTriggerStyle()} 
+      onClick={() => {
+        //localStorage.setItem("token", null);
+        localStorage.removeItem("token")
+        setUserEmail(null)
+        navigate("/signup");
+      }}
+    >
+      Logout
+    </NavigationMenuLink>
     
   </NavigationMenuItem>
        </div>
@@ -107,6 +124,40 @@ export default function Appbar() {
     </div>
    
   );
+    }
+    else{
+    return(
+      <div className="flex justify-end">
+       <NavigationMenu> 
+    <NavigationMenuList>
+        <div>
+        <NavigationMenuItem>
+         
+         <NavigationMenuLink className={navigationMenuTriggerStyle()}
+         onClick={()=>{
+            navigate("/signup")
+         }}>
+           Signup
+         </NavigationMenuLink>
+       
+     </NavigationMenuItem>  
+        </div>
+       <div>
+       <NavigationMenuItem>
+      
+      <NavigationMenuLink  className={navigationMenuTriggerStyle()} 
+      >
+        Signin
+      </NavigationMenuLink>
+    
+  </NavigationMenuItem>
+       </div>
+      </NavigationMenuList>
+    </NavigationMenu>
+    </div>
+    )
+    
+}
 }
 
 const ListItem = forwardRef(
