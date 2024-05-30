@@ -1,184 +1,156 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
-const fs = require('fs');
+//const fs = require('fs');
 const cors = require("cors")
 const app = express();
-const path = require('path');
+//const path = require('path');
 
+const port = 4000
 app.use(express.json());
 app.use(cors())
 
-let ADMINS = [];
-let USERS = [];
-let COURSES = [];
 
-// Function to read JSON file or return an empty array if file does not exist or is invalid
-const readJsonFile = (filePath) => {
-  try {
-    const data = fs.readFileSync(filePath, 'utf8');
-    return JSON.parse(data);
-  } catch (err) {
-    console.error(`Error reading file from disk: ${err}`);
-    return [];
-  }
-};
+let ADMINS = []
+//let USERS = []
+let COURSES = []
 
-// Function to write initial empty array to JSON file if it doesn't exist or is invalid
-const initializeJsonFile = (filePath) => {
-  if (!fs.existsSync(filePath) || readJsonFile(filePath).length === 0) {
-    fs.writeFileSync(filePath, JSON.stringify([]));
-  }
-};
 
-// Construct file paths relative to the script location
-const adminsFilePath = path.join(__dirname, 'admins.json');
-const usersFilePath = path.join(__dirname, 'users.json');
-const coursesFilePath = path.join(__dirname, 'courses.json');
+const secret = "jhsvhjgjhggkjgkjgjgmjb,jhjghmfkfgjfnbnvghghjfkyfuisoicjdicjd"
 
-// Initialize files if they are empty or do not exist
-initializeJsonFile(adminsFilePath);
-initializeJsonFile(usersFilePath);
-initializeJsonFile(coursesFilePath);
+// now let us create a function to generate jwt 
 
-// Initialize data
-ADMINS = readJsonFile(adminsFilePath);
-USERS = readJsonFile(usersFilePath);
-COURSES = readJsonFile(coursesFilePath);
+
+// the below is a function to generate jwt
+const generateJwt = (user)=>{
+
+
+   // create a onject to store the username of the user
+
+   const payload = {
+    username:user.username
+   }
+   return jwt.sign(payload,secret,{expiresIn:'1h'})
+
+}
+
+
+//now we have to write the middleware function to verify the jwt for the admin
+
+const authenticateJwt = (req,res,next) =>{
+   //let us create a variable to store the authorixation from the header
+   const authHeader = req.headers.authorization
+   // This specifically retrieves the value of the Authorization header from the request headers.
+   //  In the context of JWT-based authentication, this header typically contains the JWT token that the client sends to the server for authentication.
+   // for example   ->>   Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+
+
+   if (authHeader){
+      const token = authHeader.split(" ")[1]
+
+      jwt.verify(token,secret,(err,user)=>{
+         if(err){
+            return res.sendStatus(403)
+         }
+         req.user = user
+         next()
+         
+      })
+   }else{
+      res.sendStatus(401)
+   }
+   
+
+}
+
+
+
+
+
+
+app.post("/admin/signup", (req,res)=>{
+   
+   const admin = req.body
+   console.log(req.body);
+   const existingAdmin = ADMINS.find((a)=>(a.username === admin.username))
 console.log(ADMINS);
-
-const SECRET = 'my-secret-key';
-
-const authenticateJwt = (req, res, next) => {
-  const authHeader = req.headers.authorization;
-  if (authHeader) {
-    const token = authHeader.split(' ')[1];
-    jwt.verify(token, SECRET, (err, user) => {
-      if (err) {
-        return res.sendStatus(403);
-      }
-      req.user = user;
-      next();
-    });
-  } else {
-    res.sendStatus(401);
-  }
-};
-
-// Admin routes
-app.post('/admin/signup', (req, res) => {
-  const { username, password } = req.body;
-  const admin = ADMINS.find(a => a.username === username);
-  console.log("admin signup");
-  if (admin) {
-    res.status(403).json({ message: 'Admin already exists' });
-  } else {
-    const newAdmin = { username, password };
-    ADMINS.push(newAdmin);
-    fs.writeFileSync('admins.json', JSON.stringify(ADMINS));
-    const token = jwt.sign({ username, role: 'admin' }, SECRET, { expiresIn: '1h' });
-    res.json({ message: 'Admin created successfully', token });
-  }
-});
-
-app.post('/admin/login', (req, res) => {
-  const { username, password } = req.headers;
-  const admin = ADMINS.find(a => a.username === username && a.password === password);
-  if (admin) {
-    const token = jwt.sign({ username, role: 'admin' }, SECRET, { expiresIn: '1h' });
-    res.json({ message: 'Logged in successfully', token });
-  } else {
-    res.status(403).json({ message: 'Invalid username or password' });
-  }
-});
-
-app.post('/admin/courses', authenticateJwt, (req, res) => {
-  const course = req.body;
-  course.id = COURSES.length + 1;
-  COURSES.push(course);
-  fs.writeFileSync('courses.json', JSON.stringify(COURSES));
-
-  const username = req.user.username
-  res.json({ message: 'Course created successfully', courseId: course.id,username:username });
-});
-
-app.get("/admin/me", authenticateJwt, (req,res)=>{
-    console.log(req.user);
-    res.json({
-        username: req.user.username
-    })
+   if (existingAdmin){
+      res.json({message:"The admin aleady exists"})
+   } else{
+   ADMINS.push(admin) 
+  const token =  generateJwt(admin)    // generates a JSON Web Token (JWT) for the newly created admin.
+  res.json({message:"The admin created successfuly",token})
+   }
 })
 
-app.put('/admin/courses/:courseId', authenticateJwt, (req, res) => {
-  const course = COURSES.find(c => c.id === parseInt(req.params.courseId));
-  if (course) {
-    Object.assign(course, req.body);
-    fs.writeFileSync('courses.json', JSON.stringify(COURSES));
-    res.json({ message: 'Course updated successfully' });
-  } else {
-    res.status(404).json({ message: 'Course not found' });
-  }
-});
+app.post("/admin/login", (req,res)=>{
+   const { username, password } = req.header;
+   const admin = ADMINS.find(a => a.username === username && a.password === password);
+ 
+     if(admin){
+      const token = generateJwt(admin)
+      res.json({message:"logged in successfuly",token})
+     }
+})
 
-app.get('/admin/courses', authenticateJwt, (req, res) => {
-  res.json({ courses: COURSES });
-});
+app.get("/admin/me", authenticateJwt, (req,res)=>{
+  console.log(req.user);
+  res.json({
+      username: req.user.username
+  })
+})
+ 
+// now the code to create course by the admin
+app.post("/admin/courses", authenticateJwt , (req,res)=>{
+     
+  
 
-// User routes
-app.post('/users/signup', (req, res) => {
-  const { username, password } = req.body;
-  const user = USERS.find(u => u.username === username);
-  if (user) {
-    res.status(403).json({ message: 'User already exists' });
-  } else {
-    const newUser = { username, password };
-    USERS.push(newUser);
-    fs.writeFileSync('users.json', JSON.stringify(USERS));
-    const token = jwt.sign({ username, role: 'user' }, SECRET, { expiresIn: '1h' });
-    res.json({ message: 'User created successfully', token });
-  }
-});
+   let course = req.body
 
-app.post('/users/login', (req, res) => {
-  const { username, password } = req.headers;
-  const user = USERS.find(u => u.username === username && u.password === password);
-  if (user) {
-    const token = jwt.sign({ username, role: 'user' }, SECRET, { expiresIn: '1h' });
-    res.json({ message: 'Logged in successfully', token });
-  } else {
-    res.status(403).json({ message: 'Invalid username or password' });
-  }
-});
+   // and the identification of the course will be defined by an unique id
+   
+   course.id=Date.now()
 
-app.get('/users/courses', authenticateJwt, (req, res) => {
-  res.json({ courses: COURSES });
-});
+   // now put the course variable into the global COURSE variable
 
-app.post('/users/courses/:courseId', authenticateJwt, (req, res) => {
-  const course = COURSES.find(c => c.id === parseInt(req.params.courseId));
-  if (course) {
-    const user = USERS.find(u => u.username === req.user.username);
-    if (user) {
-      if (!user.purchasedCourses) {
-        user.purchasedCourses = [];
-      }
-      user.purchasedCourses.push(course);
-      fs.writeFileSync('users.json', JSON.stringify(USERS));
-      res.json({ message: 'Course purchased successfully' });
-    } else {
-      res.status(403).json({ message: 'User not found' });
-    }
-  } else {
-    res.status(404).json({ message: 'Course not found' });
-  }
-});
+   COURSES.push(course)
+   res.json({ message:"The course is created successfully"})
+  })
 
-app.get('/users/purchasedCourses', authenticateJwt, (req, res) => {
-  const user = USERS.find(u => u.username === req.user.username);
-  if (user) {
-    res.json({ purchasedCourses: user.purchasedCourses || [] });
-  } else {
-    res.status(403).json({ message: 'User not found' });
-  }
-});
 
-app.listen(4000, () => console.log('Server running on port 4000'));
+
+
+  // to edit the course created by the admin
+  app.put("/admin/courses/:courseId", authenticateJwt , (req,res)=>{
+
+   // let us store the course Id from the querry params and convert it into a number (it might be a string)
+      let courseId = parseInt(req.params.courseId)
+      
+      // now let us store the logic in a variable of whether the given course id exists or not
+      let course = COURSES.find((c)=>( c.id === courseId ))
+
+      // now let us put the logic if we find out the ccourse id exists
+        if(course){
+
+           Object.assign(course,req.body)
+
+           // The Object.assign method merges the properties from the request body (req.body) onto the course object.
+           //  Essentially, any properties sent in the PUT request body will overwrite the corresponding properties in the existing course data.
+           res.json({message:"The course is updated successfully"})
+        }else{
+           res.status(404).json({message:"The course is not found"})
+        }
+
+
+
+  })
+
+
+
+  // to show all the courses to the admin
+  app.get('/admin/courses', authenticateJwt, (req, res) => {
+   res.json({ courses: COURSES });
+ });
+
+ app.listen(port,()=>{
+   console.log(`Server is listening at ${port}`);
+  })
