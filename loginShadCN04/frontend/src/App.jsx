@@ -5,6 +5,7 @@ import  Login  from "./Pages/Login"
 import  Signup from "./Pages/Signup"
 import AddCourses from "./Pages/AddCourses";
 import Appbar from "./Pages/Appbar";
+import Courses from "./Pages/Courses";
 function App() {
   
 
@@ -14,6 +15,7 @@ function App() {
         {/* Signin/Signup Components */}
         <div className="mb-20"> {/* Add margin bottom for spacing */}
           <Routes>
+          <Route path={"/courses"} element={<Courses />} />
             <Route path={"/login"} element={<Login />} />
             <Route path={"/signup"} element={<Signup />} />
             <Route path={"/addcourses"} element={<AddCourses />} />
