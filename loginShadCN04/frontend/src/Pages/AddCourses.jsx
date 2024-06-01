@@ -16,6 +16,7 @@ function AddCourses() {
   const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const[image,setImage]=useState("")
 
   const handleCreateCourse = async () => {
     const token = localStorage.getItem("token");
@@ -34,7 +35,7 @@ function AddCourses() {
         body: JSON.stringify({
           title: title,
           description: description,
-          imageLink: "",
+          imageLink: image,
           published: true,
         }),
       });
@@ -79,6 +80,19 @@ function AddCourses() {
               setDescription(e.target.value);
             }}
           />
+        </div>
+        <div  className="grid gap-2 item-start space-y-2 mt-7">
+          <Label className="text-start font-normal">Add Image Link</Label>
+          <Input
+            id="imagelink"
+            type="text"
+            //value={imageLink}
+            //placeholder="image link"
+            onChange={(e) => {
+              setImage(e.target.value);
+            }}
+            />
+
         </div>
       </CardContent>
       <CardFooter className="justify-between">

@@ -27,8 +27,8 @@ function Courses() {
     }, [])
 
     return (
-        <div>
-            cvsdv
+        <div className="flex min-h-66 flex-wrap justify-center">
+           
             {courses.map(course => {
                 return <Course key={course.id} course={course} />
             })}
@@ -39,10 +39,18 @@ function Courses() {
 function Course(props) {
     console.log('Course props:', props);
     return (
-        <div>
-            <h2>{props.course.title}</h2>
-            <p>{props.course.description}</p>
-        </div>
+        // <div>
+        //     <h2>{props.course.title}</h2>
+        //     <p>{props.course.description}</p>
+        // </div>
+        <div class="max-w-sm rounded overflow-hidden shadow-lg">
+  
+  <div class="px-6 py-4">
+  <h2>{props.course.title}</h2>
+     <p>{props.course.description}</p>
+     <img   src={props.course.imageLink} />
+     </div>
+</div>
     )
 }
 
