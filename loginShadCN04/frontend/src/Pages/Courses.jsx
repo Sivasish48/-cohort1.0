@@ -39,16 +39,12 @@ function Courses() {
 function Course(props) {
     console.log('Course props:', props);
     return (
-        // <div>
-        //     <h2>{props.course.title}</h2>
-        //     <p>{props.course.description}</p>
-        // </div>
         <div class="max-w-sm rounded overflow-hidden shadow-lg">
   
   <div class="px-6 py-4">
   <h2>{props.course.title}</h2>
      <p>{props.course.description}</p>
-     <img   src={props.course.imageLink} />
+     <img src={props.course.imageLink} />
      </div>
 </div>
     )

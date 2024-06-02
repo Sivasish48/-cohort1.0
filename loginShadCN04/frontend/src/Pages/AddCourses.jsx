@@ -9,11 +9,11 @@ import {
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useNavigate } from "react-router-dom";
+//import { useNavigate } from "react-router-dom";
 import React, { useState } from "react";
 
 function AddCourses() {
-  const navigate = useNavigate();
+ // const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const[image,setImage]=useState("")
