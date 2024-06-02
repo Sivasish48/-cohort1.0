@@ -61,7 +61,7 @@ function AddCourses() {
         <div className="grid gap-2 item-start space-y-2">
           <Label className="text-start font-normal">Add title</Label>
           <Input
-            id="title"
+           // id="title"
             type="text"
             placeholder=""
             value={title}
@@ -73,7 +73,7 @@ function AddCourses() {
         <div className="grid gap-2 item-start space-y-2 mt-7">
           <Label className="text-start font-normal">Add Description</Label>
           <Input
-            id="description"
+           // id="description"
             type="text"
             value={description}
             onChange={(e) => {
@@ -84,7 +84,7 @@ function AddCourses() {
         <div  className="grid gap-2 item-start space-y-2 mt-7">
           <Label className="text-start font-normal">Add Image Link</Label>
           <Input
-            id="imagelink"
+            //id="imagelink"
             type="text"
             //value={imageLink}
             //placeholder="image link"

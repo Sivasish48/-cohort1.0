@@ -30,7 +30,7 @@ function Courses() {
         <div className="flex min-h-66 flex-wrap justify-center">
            
             {courses.map(course => {
-                return <Course key={course.id} course={course} />
+                return <Course  course={course} />
             })}
         </div>
     )

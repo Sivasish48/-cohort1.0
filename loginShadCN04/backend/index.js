@@ -106,9 +106,9 @@ app.post("/admin/courses", authenticateJwt , (req,res)=>{
 
    let course = req.body
 
-   // and the identification of the course will be defined by an unique id
    
-   course.id=Date.now()
+   
+   course.id=COURSES.length+1
 
    // now put the course variable into the global COURSE variable
 

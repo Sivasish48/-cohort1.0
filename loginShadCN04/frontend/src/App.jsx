@@ -6,6 +6,8 @@ import  Signup from "./Pages/Signup"
 import AddCourses from "./Pages/AddCourses";
 import Appbar from "./Pages/Appbar";
 import Courses from "./Pages/Courses";
+import Course from "./Pages/Course";
+
 function App() {
   
 
@@ -16,6 +18,7 @@ function App() {
         <div className="mb-20"> {/* Add margin bottom for spacing */}
           <Routes>
           <Route path={"/courses"} element={<Courses />} />
+          <Route path={"/courses/:courseId"} element={<Course />} />
             <Route path={"/login"} element={<Login />} />
             <Route path={"/signup"} element={<Signup />} />
             <Route path={"/addcourses"} element={<AddCourses />} />
