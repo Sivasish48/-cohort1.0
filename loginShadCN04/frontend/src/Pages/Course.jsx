@@ -148,9 +148,9 @@ function UpdateCard(props){
                 updatedCoursesList[i] = {
                     ...updatedCoursesList[i],
                     title: title,
-                    description: description,
-                    imageLink: image
-                };
+                    description: description ,
+                    imageLink: image 
+                }; 
                 break;
             }
         }
