@@ -1,3 +1,5 @@
+import axios from "axios";
+
 import {
   Card,
   CardContent,
@@ -9,11 +11,11 @@ import {
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-//import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import React, { useState } from "react";
 
 function AddCourses() {
- // const navigate = useNavigate();
+  const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const[image,setImage]=useState("")
@@ -26,30 +28,28 @@ function AddCourses() {
     }
 
     try {
-      const response = await fetch("http://localhost:4000/admin/courses", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
+      const response = await axios.post(
+        "http://localhost:4000/admin/courses",
+        {
           title: title,
           description: description,
           imageLink: image,
           published: true,
-        }),
-      });
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-      if (!response.ok) {
-        throw new Error("Failed to create course");
-      }
-
-      const data = await response.json();
-      console.log("Course created:", data.username);
+      console.log("Course created:", response.data.username);
     } catch (error) {
       console.error("Error creating course:", error);
     }
   };
+
 
   return (
     <Card className="w-[350px] mt-40">

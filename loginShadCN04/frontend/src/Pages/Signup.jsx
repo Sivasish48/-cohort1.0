@@ -1,3 +1,4 @@
+import axios from "axios";
 import {
   Card,
   CardContent,
@@ -5,10 +6,10 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { Label } from "@/components/ui/label"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+} from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 import React, { useState } from "react";
 
@@ -18,18 +19,12 @@ function Signup() {
   const [password, setPassword] = useState("");
 
   const handleSignup = () => {
-    fetch("http://localhost:4000/admin/signup", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username: email,
-        password: password,
-      }),
+    axios.post("http://localhost:4000/admin/signup", {
+      username: email,
+      password: password,
     })
-    .then((response) => response.json())
-    .then((data) => {
+    .then((response) => {
+      const data = response.data;
       console.log(data); // Log the response data
       if (data.token) {
         localStorage.setItem("token", data.token);
@@ -69,7 +64,14 @@ function Signup() {
         </div>
       </CardContent>
       <CardFooter className="justify-between">
-        <Button onClick={handleSignup}>Create an account</Button>
+       
+      <Button onClick={() => {
+    handleSignup();
+    navigate("/addcourses");
+         }}>
+         Create an account
+       </Button>
+
         <Button onClick={() => navigate("/login")}>Login</Button>
       </CardFooter>
     </Card>
