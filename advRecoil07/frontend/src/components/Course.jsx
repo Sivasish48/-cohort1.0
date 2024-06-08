@@ -5,15 +5,11 @@ import { Typography, TextField, Button } from "@mui/material";
 import axios from "axios";
 import {Loading} from "./Loading";
 import { BASE_URL } from "../config.js";
-import { courseState } from "../store/atoms/course";
-import {useRecoilState, useRecoilValue, useSetRecoilState} from "recoil";
-import { courseTitle, coursePrice, isCourseLoading, courseImage } from "../store/selectors/course";
 
 function Course() {
     let { courseId } = useParams();
-    const setCourse = useSetRecoilState(courseState);
-    const courseLoading = useRecoilValue(isCourseLoading);
-
+    const [course, setCourse] = useState(null);
+    
     useEffect(() => {
         axios.get(`${BASE_URL}/admin/course/${courseId}`, {
             method: "GET",
@@ -21,32 +17,28 @@ function Course() {
                 "Authorization": "Bearer " + localStorage.getItem("token")
             }
         }).then(res => {
-            setCourse({isLoading: false, course: res.data.course});
-        })
-        .catch(e => {
-            setCourse({isLoading: false, course: null});
+            setCourse(res.data.course);
         });
     }, []);
 
-    if (courseLoading) {
+    if (!course) {
         return <Loading />
     }
 
     return <div>
-        <GrayTopper />
+        <GrayTopper title={course.title}/>
         <Grid container>
             <Grid item lg={8} md={12} sm={12}>
-                <UpdateCard />
+                <UpdateCard course={course} setCourse={setCourse} />
             </Grid>
             <Grid item lg={4} md={12} sm={12}>
-                <CourseCard />
+                <CourseCard course={course} />
             </Grid>
         </Grid>
     </div>
 }
 
-function GrayTopper() {
-    const title = useRecoilValue(courseTitle);
+function GrayTopper({title}) {
     return <div style={{height: 250, background: "#212121", top: 0, width: "100vw", zIndex: 0, marginBottom: -250}}>
         <div style={{ height: 250, display: "flex", justifyContent: "center", flexDirection: "column"}}>
             <div>
@@ -58,13 +50,11 @@ function GrayTopper() {
     </div>
 }
 
-function UpdateCard() {
-    const [courseDetails, setCourse] = useRecoilState(courseState);
-
-    const [title, setTitle] = useState(courseDetails.course.title);
-    const [description, setDescription] = useState(courseDetails.course.description);
-    const [image, setImage] = useState(courseDetails.course.imageLink);
-    const [price, setPrice] = useState(courseDetails.course.price);
+function UpdateCard({course, setCourse}) {
+    const [title, setTitle] = useState(course.title);
+    const [description, setDescription] = useState(course.description);
+    const [image, setImage] = useState(course.imageLink);
+    const [price, setPrice] = useState(course.price);
 
     return <div style={{display: "flex", justifyContent: "center"}}>
     <Card varint={"outlined"} style={{maxWidth: 600, marginTop: 200}}>
@@ -116,7 +106,7 @@ function UpdateCard() {
             <Button
                 variant="contained"
                 onClick={async () => {
-                    axios.put(`${BASE_URL}/admin/courses/` + courseDetails.course._id, {
+                    axios.put(`${BASE_URL}/admin/courses/` + course._id, {
                         title: title,
                         description: description,
                         imageLink: image,
@@ -129,13 +119,13 @@ function UpdateCard() {
                         }
                     });
                     let updatedCourse = {
-                        _id: courseDetails.course._id,
+                        _id: course._id,
                         title: title,
                         description: description,
                         imageLink: image,
                         price
                     };
-                    setCourse({course: updatedCourse, isLoading: false});
+                    setCourse(updatedCourse);
                 }}
             > Update course</Button>
         </div>
@@ -144,9 +134,7 @@ function UpdateCard() {
 }
 
 function CourseCard(props) {
-    const title = useRecoilValue(courseTitle);
-    const imageLink = useRecoilValue(courseImage);
-
+    const course = props.course;
     return <div style={{display: "flex",  marginTop: 50, justifyContent: "center", width: "100%"}}>
      <Card style={{
         margin: 10,
@@ -157,26 +145,18 @@ function CourseCard(props) {
         paddingBottom: 15,
         zIndex: 2
     }}>
-        <img src={imageLink} style={{width: 350}} ></img>
+        <img src={course.imageLink} style={{width: 350}} ></img>
         <div style={{marginLeft: 10}}>
-            <Typography variant="h5">{title}</Typography>
-            <Price />
+            <Typography variant="h5">{course.title}</Typography>
+            <Typography variant="subtitle2" style={{color: "gray"}}>
+                Price
+            </Typography>
+            <Typography variant="subtitle1">
+                <b>Rs {course.price} </b>
+            </Typography>
         </div>
     </Card>
     </div>
-}
-
-function Price() {
-
-    const price = useRecoilValue(coursePrice);
-    return <>
-        <Typography variant="subtitle2" style={{color: "gray"}}>
-            Price
-        </Typography>
-        <Typography variant="subtitle1">
-            <b>Rs {price} </b>
-        </Typography>
-    </>
 }
 
 export default Course;
