@@ -1,103 +1,77 @@
-import {Typography} from "@mui/material";
+
+
+import React from 'react';
+import { Typography } from "@mui/material";
 import Button from "@mui/material/Button";
-import { useEffect, useState } from "react";
-import {useNavigate} from "react-router-dom";
-import { BASE_URL } from "../config.js";
-import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { useRecoilValue } from "recoil";
+import { isUserLoading } from "../store/selectors/isUserLoading";
+import { userEmailState } from "../store/selectors/userEmail";
 
 function Appbar() {
-    const navigate = useNavigate()
-    const [userEmail, setUserEmail] = useState(null);
+    const navigate = useNavigate();
 
-    const init = async() => {
-        const response = await axios.get(`${BASE_URL}/admin/me`, {
-            headers: {
-                "Authorization": "Bearer " + localStorage.getItem("token")
-            }
-        })
+    const userEmail = useRecoilValue(userEmailState);
+    const userLoading = useRecoilValue(isUserLoading);
 
-        if (response.data.username) {
-            setUserEmail(response.data.username)
-        }
-    };
+    console.log('AppBar - userEmail:', userEmail);
+    console.log('AppBar - userLoading:', userLoading);
 
-    useEffect(() => {
-       init();
-    }, []);
+    if (userLoading) {
+        return <div>Loading...</div>;
+    }
 
     if (userEmail) {
-        return <div style={{
-            display: "flex",
-            justifyContent: "space-between",
-            padding: 4,
-            zIndex: 1
-        }}>
-            <div style={{marginLeft: 10, cursor: "pointer"}} onClick={() => {
-                navigate("/")
+        return (
+            <div style={{
+                display: "flex",
+                justifyContent: "space-between",
+                padding: 4,
+                zIndex: 1
             }}>
-                <Typography variant={"h6"}>Coursera</Typography>
-            </div>
-    
-            <div style={{display: "flex"}}>
-                <div style={{marginRight: 10, display: "flex"}}>
-                <div style={{marginRight: 10}}>
+                <div style={{ marginLeft: 10, cursor: "pointer" }} onClick={() => navigate("/")}>
+                    <Typography variant={"h6"}>Coursera</Typography>
+                </div>
+                <div style={{ display: "flex" }}>
+                    <div style={{ marginRight: 10, display: "flex" }}>
+                        <div style={{ marginRight: 10 }}>
+                            <Button onClick={() => navigate("/addcourse")}>Add course</Button>
+                        </div>
+                        <div style={{ marginRight: 10 }}>
+                            <Button onClick={() => navigate("/courses")}>Courses</Button>
+                        </div>
                         <Button
+                            variant={"contained"}
                             onClick={() => {
-                                navigate("/addcourse")
+                                localStorage.setItem("token", null);
+                                window.location = "/";
                             }}
-                        >Add course</Button>
+                        >Logout</Button>
                     </div>
-
-                    <div style={{marginRight: 10}}>
-                        <Button
-                            onClick={() => {
-                                navigate("/courses")
-                            }}
-                        >Courses</Button>
-                    </div>
-
-                    <Button
-                        variant={"contained"}
-                        onClick={() => {
-                            localStorage.setItem("token", null);
-                            window.location = "/";
-                        }}
-                    >Logout</Button>
                 </div>
             </div>
-        </div>
+        );
     } else {
-        return <div style={{
-            display: "flex",
-            justifyContent: "space-between",
-            padding: 4,
-            zIndex: 1
-        }}>
-            <div style={{marginLeft: 10, cursor: "pointer"}} onClick={() => {
-                navigate("/")
+        return (
+            <div style={{
+                display: "flex",
+                justifyContent: "space-between",
+                padding: 4,
+                zIndex: 1
             }}>
-                <Typography variant={"h6"}>Coursera</Typography>
-            </div>
-    
-            <div style={{display: "flex"}}>
-                <div style={{marginRight: 10}}>
-                    <Button
-                        variant={"contained"}
-                        onClick={() => {
-                            navigate("/signup")
-                        }}
-                    >Signup</Button>
+                <div style={{ marginLeft: 10, cursor: "pointer" }} onClick={() => navigate("/")}>
+                    <Typography variant={"h6"}>Coursera</Typography>
                 </div>
-                <div>
-                    <Button
-                        variant={"contained"}
-                        onClick={() => {
-                            navigate("/signin")
-                        }}
-                    >Signin</Button>
+                <div style={{ display: "flex" }}>
+                    <div style={{ marginRight: 10 }}>
+                        <Button variant={"contained"} onClick={() => navigate("/signup")}>Signup</Button>
+                    </div>
+                    <div>
+                        <Button variant={"contained"} onClick={() => navigate("/signin")}>Signin</Button>
+                    </div>
                 </div>
             </div>
-        </div>
+        );
     }
 }
 

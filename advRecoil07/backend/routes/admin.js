@@ -9,6 +9,7 @@ const router = express.Router();
 
 router.get("/me", authenticateJwt, async (req, res) => {
     const admin = await Admin.findOne({ username: req.user.username });
+    
     if (!admin) {
       res.status(403).json({msg: "Admin doesnt exist"})
       return
@@ -20,8 +21,10 @@ router.get("/me", authenticateJwt, async (req, res) => {
 
 router.post('/signup', (req, res) => {
     const { username, password } = req.body;
+    console.log(req.body.username);
     function callback(admin) {
       if (admin) {
+        console.log(admin);
         res.status(403).json({ message: 'Admin already exists' });
       } else {
         const obj = { username: username, password: password };
