@@ -9,7 +9,7 @@ import { BASE_URL } from "../config.js";
 function Signin() {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
-    //const navigate = useNavigate()
+   // const navigate = useNavigate()
     return <div>
             <div style={{
                 paddingTop: 150,
@@ -59,7 +59,8 @@ function Signin() {
                         const data = res.data;
                         
                         localStorage.setItem("token", data.token);
-                        window.location = "/"
+                       // window.location = "/"
+                       //navigate("/courses")
                     }}
 
                 > Signin</Button>

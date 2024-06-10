@@ -1,5 +1,6 @@
 
 
+
 import React from 'react';
 import { Typography } from "@mui/material";
 import Button from "@mui/material/Button";
@@ -12,10 +13,10 @@ function Appbar() {
     const navigate = useNavigate();
 
     const userEmail = useRecoilValue(userEmailState);
-    console.log(userEmail);
     const userLoading = useRecoilValue(isUserLoading);
 
-   
+    console.log('AppBar - userEmail:', userEmail);
+    console.log('AppBar - userLoading:', userLoading);
 
     if (userLoading) {
         return <div>Loading...</div>;
